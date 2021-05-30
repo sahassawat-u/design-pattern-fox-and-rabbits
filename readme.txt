@@ -1,4 +1,2 @@
-/**
- * @author David J. Barnes and Michael K?lling
- * @version 2016.02.29
- */
+# fox and rabbits
+refactor with new classes, tiger and hunter
