@@ -1,6 +1,8 @@
 package io.muic.ooc.fab;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 public class FieldStats {
 
@@ -8,13 +10,22 @@ public class FieldStats {
     private HashMap<Class, Counter> counters;
     // Whether the counters are currently up to date.
     private boolean countsValid;
-
+    private Subject subject;
+    private RabbitObserver rabbitObserver;
+    private FoxObserver foxObserver;
+    private TigerObserver tigerObserver;
+    private HunterObserver hunterObserver;
     /**
      * Construct a FieldStats object.
      */
     public FieldStats() {
         // Set up a collection for counters for each type of animal that
         // we might find
+        subject = new Subject();
+        rabbitObserver = new RabbitObserver(subject);
+        foxObserver = new FoxObserver(subject);
+        tigerObserver = new TigerObserver(subject);
+        hunterObserver = new HunterObserver(subject);
         counters = new HashMap<>();
         countsValid = true;
     }
@@ -32,11 +43,25 @@ public class FieldStats {
         }
         for (Class key : counters.keySet()) {
             Counter info = counters.get(key);
-            buffer.append(info.getName());
+            String which = info.getName().substring(info.getName().lastIndexOf('.')+1);
+            buffer.append(which);
             buffer.append(": ");
-            buffer.append(info.getCount());
+            if(which.equals("Rabbit")) {
+                rabbitObserver.update(info.getCount());
+                buffer.append(rabbitObserver.getPopulation());
+            } else if(which.equals("Hunter")){
+                hunterObserver.update(info.getCount());
+                buffer.append(hunterObserver.getPopulation());
+            } else if(which.equals("Fox")){
+                foxObserver.update(info.getCount());
+                buffer.append(foxObserver.getPopulation());
+            } else if(which.equals("Tiger")){
+                tigerObserver.update(info.getCount());
+                buffer.append(tigerObserver.getPopulation());
+            }
             buffer.append(' ');
         }
+//        System.out.println(buffer.toString());
         return buffer.toString();
     }
 
@@ -58,6 +83,7 @@ public class FieldStats {
      */
     public void incrementCount(Class animalClass) {
         Counter count = counters.get(animalClass);
+//        System.out.println(count);
         if (count == null) {
             // We do not have a counter for this species yet.
             // Create one.

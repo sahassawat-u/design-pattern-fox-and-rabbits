@@ -145,7 +145,9 @@ public class SimulatorView extends JFrame {
             }
         }
         stats.countFinished();
-
+//        System.out.println(stats.getPopulationDetails(field));
+//        population.setText("Rabbits : " + 1 + " Foxes : " + 2 + " Tigers : " + 3 + " Hunters : " + 4);
+//        population.setText("Hunters : ");
         population.setText(POPULATION_PREFIX + stats.getPopulationDetails(field));
         fieldView.repaint();
     }
